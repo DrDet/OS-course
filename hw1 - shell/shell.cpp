@@ -40,21 +40,24 @@ int get_args(char**& args, int& size)
 	}
 	for (size_t i = 0; i < size - 1; ++i) 
 	{
-		args[i] = (char*)malloc(sizeof(char) * t[i].size());
-		char* cpy = strdup(t[i].c_str());
-		if (args[i] == NULL || cpy == NULL)
+		args[i] = strdup(t[i].c_str());
+		if (args[i] == NULL)
 		{
 			for (size_t j = 0; j < i; ++j)
 				free(args[j]);
 			free(args);
-			if (!args[i]) free(args[i]);
-			if (!cpy) free(cpy);
 			return -1;
 		}
-		args[i] = cpy;
 	}
 	args[size - 1] = NULL;
 	return 0;
+}
+
+void free_carr(char** arr, int size) 
+{
+	for (int i = 0; i < size; ++i)
+		free(arr[i]);
+	free(arr);
 }
 
 int main()
@@ -83,7 +86,7 @@ int main()
 			exit(EXIT_FAILURE);
 		}
 		else if (pid > 0)
-		{
+		{	
 			int status;
 			if (waitpid(pid, &status, 0) == -1)
 			{
@@ -93,13 +96,12 @@ int main()
 			{
 				printf("Returned value: %d\n", status);
 			}
-			for (int i = 0; i < size; ++i)
-				free(args[i]);
-			free(args);
+			free_carr(args, size);
 		}
 		else
 		{
 			perror("Couldn't create a process");
+			free_carr(args, size);
 		}
 	}
 	return 0;
