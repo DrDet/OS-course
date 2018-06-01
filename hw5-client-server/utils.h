@@ -1,0 +1,1 @@
+void check(int actual, int val_to_cmp, int is_good, char const * msg);
