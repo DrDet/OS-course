@@ -31,19 +31,22 @@ int main(int argc, char* argv[]) {
 	check(bind(lstn_sock, (struct sockaddr *) &addr, sizeof(addr)), 0, 1, "Couldn't bind to the given port");
 	check(listen(lstn_sock, MAX_REQUESTS_QUEUE), 0, 1, "Couldn't listen socket");
 	while (1) {
+		printf("Server: waiting for request...\n");
 		int client_sock = accept(lstn_sock, NULL, NULL);
 		check(client_sock, -1, 0, "Couldn't accept connection");
+		char buf[1024];
+		char reply[1024];
 		while (1) {
-			char buf[1024];
 			int cnt = recv(client_sock, buf, 1024, 0);
 			check(cnt, -1, 0, "Error during receiving");
 			if (cnt == 0) {
 				break;
 			}
-			char reply[1024];
+			printf("Server: received a request: %s\n", buf);
 			int len;
 			make_reply(buf, cnt, reply, &len);
-			send(client_sock, reply, len, 0);			
+			printf("Server: processed\n");
+			send(client_sock, reply, len, 0);	
 		}
 	}
 	return 0;
